@@ -85,6 +85,7 @@ class roomba_program(Node):
         current_time = self.get_clock().now()
 
         if self.state == 'MOVE_FORWARD':
+            self.move_forward()
             if self.detect_obstacle():
                 self.state = 'BACK_UP'
                 self.backup_start_time = current_time  # Start backup timer
@@ -92,6 +93,7 @@ class roomba_program(Node):
                 self.move_forward()
 
         elif self.state == 'BACK_UP':
+            self.back_up()
             if (current_time - self.backup_start_time).nanoseconds > 1e9:  # Backup for 1 second
                 self.state = 'SPIN'
                 self.spin_start_time = current_time  # Start spin timer
@@ -99,6 +101,7 @@ class roomba_program(Node):
                 self.back_up()
 
         elif self.state == 'SPIN':
+            self.spin_in_place()
             if not self.detect_obstacle():
                 self.state = 'MOVE_FORWARD'  # Go back to moving forward
             else:
@@ -109,6 +112,7 @@ class roomba_program(Node):
                     self.spin_in_place()
 
         elif self.state == 'RECOVERY':
+            self.recovery()
             if (current_time - self.recovery_start_time).nanoseconds > 3e9:  # Recover for 3 seconds
                 self.state = 'MOVE_FORWARD'  # Try moving forward again
             else:
